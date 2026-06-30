@@ -410,8 +410,9 @@
   });
 
   // Deep-link support: a link ending in #en / #fr / #pt (matching the
-  // session `id`) scrolls to that event and briefly highlights it,
-  // then auto-opens its detail panel. Used by HubSpot email buttons.
+  // session `id`) scrolls to that event and highlights it in light
+  // blue for the rest of the visit, then auto-opens its detail panel.
+  // Used by HubSpot email buttons.
   function focusFromHash() {
     const id = window.location.hash.replace("#", "");
     if (!id) return;
@@ -420,7 +421,6 @@
 
     target.scrollIntoView({ behavior: "smooth", block: "center" });
     target.classList.add("flash");
-    setTimeout(() => target.classList.remove("flash"), 1800);
 
     const btn = target.querySelector(".reveal-btn");
     const panel = target.querySelector(".detail-panel");
