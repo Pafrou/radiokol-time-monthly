@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RADIOKOL — Session Times in Your Timezone</title>
+<style>
+  :root {
+    --ink: #1b1b1d;
+    --paper: #faf9f6;
+    --line: #d8d6d0;
+    --swiss-red: #d8232a;
+    --muted: #6b6b68;
+    --accent-bg: #f1efe9;
+    --highlight: #fff3d6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--swiss-red);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: var(--swiss-red);
+  }
+
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 34px;
+    font-weight: 400;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 52ch;
+  }
+
+  .anchor-line {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .anchor-line strong {
+    color: var(--ink);
+  }
+
+  .events {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .event {
+    background: var(--paper);
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px 24px;
+    align-items: start;
+    scroll-margin-top: 24px;
+    transition: background-color 0.6s ease;
+  }
+
+  .event.flash {
+    background-color: var(--highlight);
+  }
+
+  .event-lang {
+    font-size: 12px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--swiss-red);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .event-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    margin: 0 0 14px;
+  }
+
+  .time-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .time-local {
+    font-size: 28px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .time-meta {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .swiss-ref {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .join {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .join a,
+  .reveal-btn {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 2px;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .join a {
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+  }
+
+  .join a:hover,
+  .join a:focus-visible {
+    background: var(--swiss-red);
+    border-color: var(--swiss-red);
+  }
+
+  .reveal-btn {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    font-family: inherit;
+  }
+
+  .reveal-btn:hover,
+  .reveal-btn:focus-visible {
+    border-color: var(--ink);
+  }
+
+  .join a:focus-visible,
+  .reveal-btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  .detail-panel {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    background: var(--accent-bg);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    font-size: 13px;
+    display: none;
+  }
+
+  .detail-panel.open {
+    display: block;
+  }
+
+  .detail-panel dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 16px;
+  }
+
+  .detail-panel dt {
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .detail-panel dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .past .time-local,
+  .past .event-title {
+    color: var(--muted);
+  }
+
+  .past-tag {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    padding: 2px 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  footer {
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+  }
+
+  @media (max-width: 540px) {
+    .event {
+      grid-template-columns: 1fr;
+    }
+    .join {
+      justify-self: start;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    h1 { font-size: 27px; }
+    .time-local { font-size: 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Set in Switzerland</div>
+      <h1>RADIOKOL session times</h1>
+      <p class="sub">Three sessions, scheduled from Switzerland, shown below converted automatically to your computer's clock and timezone.</p>
+      <div class="anchor-line">Your detected timezone: <strong id="tz-name">—</strong></div>
+    </header>
+
+    <div class="events" id="events"></div>
+
+    <footer>
+      Times are calculated from your device's clock and timezone settings. If your system clock is wrong, the times shown here will be too.
+    </footer>
+  </div>
+
+<!-- sessions.js defines the `sessions` array (dates/times/links). Edit that file only. -->
+<script src="sessions.js"></script>
+<script>
+  const SWISS_TZ = "Europe/Zurich";
+
+  // Convert a Switzerland-local "wall clock" time into a true UTC Date instant,
+  // accounting for whichever offset (CET/CEST) applies on that date.
+  function swissWallTimeToUTC(isoLocal) {
+    const naive = new Date(isoLocal + "Z"); // treat as UTC initially
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: SWISS_TZ,
+      hour12: false,
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    });
+
+    function partsToDate(parts) {
+      const get = (t) => parts.find(p => p.type === t).value;
+      return Date.UTC(
+        parseInt(get("year")), parseInt(get("month")) - 1, parseInt(get("day")),
+        parseInt(get("hour")) === 24 ? 0 : parseInt(get("hour")),
+        parseInt(get("minute")), parseInt(get("second"))
+      );
+    }
+
+    let guessUTC = naive.getTime();
+    for (let i = 0; i < 3; i++) {
+      const zurichAsUTC = partsToDate(fmt.formatToParts(new Date(guessUTC)));
+      const diff = (Date.parse(isoLocal + "Z")) - zurichAsUTC;
+      guessUTC += diff;
+    }
+    return new Date(guessUTC);
+  }
+
+  function formatLocal(date) {
+    const dateFmt = new Intl.DateTimeFormat(undefined, {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+    const timeFmt = new Intl.DateTimeFormat(undefined, {
+      hour: "numeric", minute: "2-digit"
+    });
+    return { date: dateFmt.format(date), time: timeFmt.format(date) };
+  }
+
+  function formatFullLocal(date, tz) {
+    const dateFmt = new Intl.DateTimeFormat(undefined, {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+    const timeFmt = new Intl.DateTimeFormat(undefined, {
+      hour: "numeric", minute: "2-digit", second: "2-digit"
+    });
+    const offsetFmt = new Intl.DateTimeFormat(undefined, {
+      timeZoneName: "shortOffset"
+    });
+    let offset = "";
+    try {
+      const parts = offsetFmt.formatToParts(date);
+      const tzPart = parts.find(p => p.type === "timeZoneName");
+      offset = tzPart ? tzPart.value : "";
+    } catch (e) {
+      offset = "";
+    }
+    return { date: dateFmt.format(date), time: timeFmt.format(date), tz: tz, offset: offset };
+  }
+
+  function formatSwiss(date) {
+    const fmt = new Intl.DateTimeFormat("en-GB", {
+      timeZone: SWISS_TZ, weekday: "short", day: "2-digit", month: "short",
+      hour: "2-digit", minute: "2-digit"
+    });
+    return fmt.format(date) + " (Switzerland)";
+  }
+
+  const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local timezone";
+  document.getElementById("tz-name").textContent = userTz;
+
+  const container = document.getElementById("events");
+  const now = new Date();
+
+  sessions.forEach((s) => {
+    const utcInstant = swissWallTimeToUTC(s.swissDateTime);
+    const local = formatLocal(utcInstant);
+    const full = formatFullLocal(utcInstant, userTz);
+    const swissLabel = formatSwiss(utcInstant);
+    const isPast = utcInstant.getTime() < now.getTime();
+    const panelId = "detail-" + s.id;
+
+    const el = document.createElement("div");
+    el.className = "event" + (isPast ? " past" : "");
+    el.id = s.id;
+    el.innerHTML = `
+      <div>
+        <div class="event-lang">${s.lang}</div>
+        <h2 class="event-title">${s.title}${isPast ? '<span class="past-tag">Already happened</span>' : ""}</h2>
+        <div class="time-row">
+          <span class="time-local">${local.time}</span>
+          <span class="time-meta">${local.date}</span>
+        </div>
+        <div class="swiss-ref">${swissLabel}</div>
+      </div>
+      <div class="join">
+        <a href="${s.joinUrl}" target="_blank" rel="noopener">Join session</a>
+        <button class="reveal-btn" type="button" aria-expanded="false" aria-controls="${panelId}">Time in my country</button>
+      </div>
+      <div class="detail-panel" id="${panelId}">
+        <dl>
+          <dt>Date</dt><dd>${full.date}</dd>
+          <dt>Time</dt><dd>${full.time}</dd>
+          <dt>Timezone</dt><dd>${full.tz}${full.offset ? " (" + full.offset + ")" : ""}</dd>
+        </dl>
+      </div>
+    `;
+    container.appendChild(el);
+
+    const btn = el.querySelector(".reveal-btn");
+    const panel = el.querySelector(".detail-panel");
+    btn.addEventListener("click", () => {
+      const isOpen = panel.classList.toggle("open");
+      btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      btn.textContent = isOpen ? "Hide details" : "Time in my country";
+    });
+  });
+
+  // Deep-link support: a link ending in #en / #fr / #pt (matching the
+  // session `id`) scrolls to that event and briefly highlights it,
+  // then auto-opens its detail panel. Used by HubSpot email buttons.
+  function focusFromHash() {
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.classList.add("flash");
+    setTimeout(() => target.classList.remove("flash"), 1800);
+
+    const btn = target.querySelector(".reveal-btn");
+    const panel = target.querySelector(".detail-panel");
+    if (btn && panel && !panel.classList.contains("open")) {
+      panel.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      btn.textContent = "Hide details";
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", focusFromHash);
+  window.addEventListener("hashchange", focusFromHash);
+</script>
+</body>
+</html>
