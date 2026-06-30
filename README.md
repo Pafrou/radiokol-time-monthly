@@ -2,7 +2,7 @@
 
 A static page that shows RADIOKOL session times (English/Français/Português),
 set in Switzerland time, automatically converted to each visitor's own
-timezone using their browser. No backend, no manual per-country setup.
+timezone using their browser.  No backend, no manual per-country setup.
 
 Live at: `https://<your-github-username>.github.io/<repo-name>/`
 (set this up once via Settings → Pages → Deploy from branch → main)
