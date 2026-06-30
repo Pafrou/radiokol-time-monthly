@@ -25,21 +25,21 @@ const sessions = [
     id: "en",
     lang: "English",
     title: "RADIOKOL English",
-    swissDateTime: "2026-06-30T16:00:00",
+    swissDateTime: "2026-07-20T16:00:00",
     joinUrl: "https://whereby.com/radiokol2026"
   },
   {
     id: "fr",
     lang: "Français",
     title: "RADIOKOL Français",
-    swissDateTime: "2026-07-01T18:00:00",
+    swissDateTime: "2026-07-23T16:00:00",
     joinUrl: "https://whereby.com/radiokol2026"
   },
   {
     id: "pt",
     lang: "Português",
     title: "RADIOKOL Português",
-    swissDateTime: "2026-07-03T14:00:00",
+    swissDateTime: "2026-07-24T15:00:00",
     joinUrl: "https://whereby.com/radiokol2026"
   }
 ];
