@@ -16,8 +16,9 @@
 // 4. GitHub Pages updates automatically within ~1 minute. Nothing
 //    else needs to be touched, rebuilt, or redeployed.
 //
-// joinUrl is the Whereby link. It rarely changes, but you can
-// edit it here too if it ever does — same process as above.
+// NOTE: this repository and page are PUBLIC. Never put the Whereby
+// link (or any private link) in this file. The Whereby link is
+// shared only in the HubSpot email to invited recipients.
 // ============================================================
 
 const sessions = [
@@ -25,21 +26,18 @@ const sessions = [
     id: "en",
     lang: "English",
     title: "RADIOKOL English",
-    swissDateTime: "2026-10-28T15:00:00",
-    joinUrl: "https://whereby.com/radiokol2026"
+    swissDateTime: "2026-10-28T15:00:00"
   },
   {
     id: "fr",
     lang: "Français",
     title: "RADIOKOL Français",
-    swissDateTime: "2026-10-29T15:00:00",
-    joinUrl: "https://whereby.com/radiokol2026"
+    swissDateTime: "2026-10-29T15:00:00"
   },
   {
     id: "pt",
     lang: "Português",
     title: "RADIOKOL Português",
-    swissDateTime: "2026-10-30T15:00:00",
-    joinUrl: "https://whereby.com/radiokol2026"
+    swissDateTime: "2026-10-30T15:00:00"
   }
 ];
