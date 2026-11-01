@@ -26,18 +26,18 @@ const sessions = [
     id: "en",
     lang: "English",
     title: "RADIOKOL English",
-    swissDateTime: "2026-10-28T15:00:00"
+    swissDateTime: "2026-11-25T18:00:00"
   },
   {
     id: "fr",
     lang: "Français",
     title: "RADIOKOL Français",
-    swissDateTime: "2026-10-29T15:00:00"
+    swissDateTime: "2026-11-26T18:00:00"
   },
   {
     id: "pt",
     lang: "Português",
     title: "RADIOKOL Português",
-    swissDateTime: "2026-10-30T15:00:00"
+    swissDateTime: "2026-11-27T18:00:00"
   }
 ];
